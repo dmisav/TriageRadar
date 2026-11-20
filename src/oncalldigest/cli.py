@@ -5,7 +5,7 @@ import asyncio
 import json
 from pathlib import Path
 
-from oncalldigest.config import load_config
+from oncalldigest.config import load_config, redact_secrets
 from oncalldigest.models.digest import DigestDocument
 from oncalldigest.pipeline import run
 
@@ -25,7 +25,11 @@ def main() -> int:
     args = parser.parse_args()
 
     if args.command == "validate":
-        load_config(args.config)
+        try:
+            load_config(args.config)
+        except (OSError, ValueError) as exc:
+            print(f"invalid configuration: {redact_secrets(str(exc))}")
+            return 2
         print(f"valid: {args.config}")
         return 0
     if args.command == "render":

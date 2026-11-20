@@ -6,8 +6,8 @@ sources:
   - id: example-health
     type: log_query
     settings:
-      mode: fixture
-      fixture: fixtures/log_query_rows.json
+      mode: "${LOG_QUERY_MODE:-fixture}"
+      fixture: "${LOG_QUERY_FIXTURE:-fixtures/log_query_rows.json}"
 sections:
   - id: failures
     title: Failures
@@ -18,5 +18,5 @@ sections:
 tracker:
   type: azure_devops
   settings:
-    mode: fixture
-    fixture: fixtures/azure_devops_work_items.json
+    mode: "${AZDO_MODE:-fixture}"
+    fixture: "${AZDO_FIXTURE:-fixtures/azure_devops_work_items.json}"

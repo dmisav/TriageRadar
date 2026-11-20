@@ -15,7 +15,9 @@ sources:
     retries: 2
     settings:
       provider: azure_data_explorer
-      query: "$(ERROR_HEALTH_QUERY)"
+      endpoint: "${ADX_ENDPOINT}"
+      database: "${ADX_DATABASE}"
+      query: "${ERROR_HEALTH_QUERY}"
 sections:
   - id: ci
     title: CI health
@@ -32,4 +34,7 @@ sections:
 tracker:
   type: azure_devops
   settings:
-    project: example-project
+    organization: "${AZDO_ORGANIZATION}"
+    project: "${AZDO_PROJECT}"
+    wiql: "${AZDO_WIQL}"
+    token_env: "${AZDO_TOKEN_ENV:-AZDO_TOKEN}"

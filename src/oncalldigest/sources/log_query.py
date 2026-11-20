@@ -8,6 +8,7 @@ from typing import Any, cast
 
 import httpx
 
+from oncalldigest.config import redact_secrets
 from oncalldigest.models.signals import Signal, SourceHealth, SourceResult
 from oncalldigest.plugins.base import RunContext, Source
 
@@ -36,7 +37,7 @@ class LogQuerySource(Source):
                 source_id=self.source_id,
                 status="failed",
                 duration_ms=int((time.monotonic() - started) * 1000),
-                error=f"{type(exc).__name__}: {exc}",
+                error=redact_secrets(f"{type(exc).__name__}: {exc}"),
             )
             return SourceResult(health=health)
 
