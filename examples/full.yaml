@@ -1,0 +1,35 @@
+team_id: example-team
+config_revision: "1"
+time_zone: UTC
+sources:
+  - id: build-ci
+    type: ci_pipelines
+    timeout_seconds: 45
+    retries: 2
+    settings:
+      provider: azure_devops
+      definitions: []
+  - id: service-errors
+    type: log_query
+    timeout_seconds: 30
+    retries: 2
+    settings:
+      provider: azure_data_explorer
+      query: "$(ERROR_HEALTH_QUERY)"
+sections:
+  - id: ci
+    title: CI health
+    ordering: 10
+    signal_kinds: [pipeline_failure, test_failure]
+    threshold: 1
+    grouping_key: component
+  - id: errors
+    title: Service errors
+    ordering: 20
+    signal_kinds: [error]
+    threshold: 5
+    grouping_key: component
+tracker:
+  type: azure_devops
+  settings:
+    project: example-project

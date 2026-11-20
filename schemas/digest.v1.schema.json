@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://oncalldigest.dev/schemas/digest.v1.schema.json",
+  "title": "OnCallDigest",
+  "type": "object",
+  "required": ["schema_version", "generated_at", "run_id", "team_id", "window", "status", "sections", "metadata"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "generated_at": {"type": "string", "format": "date-time"},
+    "run_id": {"type": "string", "minLength": 1},
+    "team_id": {"type": "string", "minLength": 1},
+    "window": {
+      "type": "object",
+      "required": ["start", "end", "time_zone"],
+      "properties": {
+        "start": {"type": "string", "format": "date-time"},
+        "end": {"type": "string", "format": "date-time"},
+        "time_zone": {"const": "UTC"}
+      },
+      "additionalProperties": false
+    },
+    "status": {
+      "type": "object",
+      "required": ["overall", "degraded", "source_health"],
+      "properties": {
+        "overall": {"enum": ["healthy", "degraded", "failed"]},
+        "degraded": {"type": "boolean"},
+        "source_health": {"type": "array", "items": {"$ref": "#/$defs/sourceHealth"}}
+      },
+      "additionalProperties": false
+    },
+    "sections": {"type": "array", "items": {"$ref": "#/$defs/section"}},
+    "metadata": {
+      "type": "object",
+      "required": ["config_revision", "processor_version"],
+      "properties": {
+        "config_revision": {"type": "string"},
+        "processor_version": {"type": "string"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "sourceHealth": {
+      "type": "object",
+      "required": ["source_id", "status", "duration_ms", "signal_count"],
+      "properties": {
+        "source_id": {"type": "string"},
+        "status": {"enum": ["healthy", "degraded", "failed"]},
+        "duration_ms": {"type": "integer", "minimum": 0},
+        "signal_count": {"type": "integer", "minimum": 0},
+        "error": {"type": ["string", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "section": {
+      "type": "object",
+      "required": ["id", "title", "ordering", "summary", "items"],
+      "properties": {
+        "id": {"type": "string"},
+        "title": {"type": "string"},
+        "ordering": {"type": "integer"},
+        "summary": {"type": "object"},
+        "items": {"type": "array"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

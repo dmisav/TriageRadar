@@ -1,0 +1,11 @@
+team_id: example-team
+config_revision: "1"
+time_zone: UTC
+sources: []
+sections:
+  - id: failures
+    title: Failures
+    ordering: 10
+    signal_kinds: [test_failure]
+    threshold: 1
+    grouping_key: component

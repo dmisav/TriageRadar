@@ -1,0 +1,46 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "oncalldigest"
+version = "0.1.0"
+description = "Configurable, deterministic on-call health digests"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { file = "LICENSE" }
+dependencies = [
+  "pydantic>=2.9,<3",
+  "pydantic-settings>=2.6,<3",
+  "PyYAML>=6.0,<7",
+]
+
+[project.optional-dependencies]
+dev = [
+  "mypy>=1.13,<2",
+  "pytest>=8.3,<9",
+  "ruff>=0.8,<1",
+  "types-PyYAML>=6.0,<7",
+]
+
+[project.scripts]
+oncalldigest = "oncalldigest.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/oncalldigest"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.mypy]
+strict = true
+python_version = "3.12"
+packages = ["oncalldigest"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
