@@ -1,70 +1,471 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://oncalldigest.dev/schemas/digest.v1.schema.json",
-  "title": "OnCallDigest",
-  "type": "object",
-  "required": ["schema_version", "generated_at", "run_id", "team_id", "window", "status", "sections", "metadata"],
-  "properties": {
-    "schema_version": {"const": "1.0"},
-    "generated_at": {"type": "string", "format": "date-time"},
-    "run_id": {"type": "string", "minLength": 1},
-    "team_id": {"type": "string", "minLength": 1},
-    "window": {
-      "type": "object",
-      "required": ["start", "end", "time_zone"],
+  "$defs": {
+    "DigestItem": {
+      "additionalProperties": false,
       "properties": {
-        "start": {"type": "string", "format": "date-time"},
-        "end": {"type": "string", "format": "date-time"},
-        "time_zone": {"const": "UTC"}
+        "signal": {
+          "$ref": "#/$defs/Signal"
+        },
+        "fingerprint": {
+          "minLength": 1,
+          "title": "Fingerprint",
+          "type": "string"
+        },
+        "severity": {
+          "minLength": 1,
+          "title": "Severity",
+          "type": "string"
+        },
+        "suppression": {
+          "$ref": "#/$defs/Suppression"
+        },
+        "matches": {
+          "items": {
+            "$ref": "#/$defs/Match"
+          },
+          "title": "Matches",
+          "type": "array"
+        }
       },
-      "additionalProperties": false
+      "required": [
+        "signal",
+        "fingerprint",
+        "severity"
+      ],
+      "title": "DigestItem",
+      "type": "object"
+    },
+    "DigestMetadata": {
+      "additionalProperties": false,
+      "properties": {
+        "config_revision": {
+          "title": "Config Revision",
+          "type": "string"
+        },
+        "processor_version": {
+          "title": "Processor Version",
+          "type": "string"
+        },
+        "source_counts": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "title": "Source Counts",
+          "type": "object"
+        },
+        "mode": {
+          "default": "live",
+          "title": "Mode",
+          "type": "string"
+        }
+      },
+      "required": [
+        "config_revision",
+        "processor_version"
+      ],
+      "title": "DigestMetadata",
+      "type": "object"
+    },
+    "DigestSection": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "ordering": {
+          "title": "Ordering",
+          "type": "integer"
+        },
+        "summary": {
+          "$ref": "#/$defs/SectionSummary"
+        },
+        "items": {
+          "items": {
+            "$ref": "#/$defs/DigestItem"
+          },
+          "title": "Items",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "ordering",
+        "summary"
+      ],
+      "title": "DigestSection",
+      "type": "object"
+    },
+    "DigestStatus": {
+      "additionalProperties": false,
+      "properties": {
+        "overall": {
+          "enum": [
+            "healthy",
+            "degraded",
+            "failed"
+          ],
+          "title": "Overall",
+          "type": "string"
+        },
+        "degraded": {
+          "title": "Degraded",
+          "type": "boolean"
+        },
+        "data_health_banner": {
+          "title": "Data Health Banner",
+          "type": "string"
+        },
+        "source_health": {
+          "items": {
+            "$ref": "#/$defs/SourceHealthSummary"
+          },
+          "title": "Source Health",
+          "type": "array"
+        }
+      },
+      "required": [
+        "overall",
+        "degraded",
+        "data_health_banner"
+      ],
+      "title": "DigestStatus",
+      "type": "object"
+    },
+    "DigestWindow": {
+      "additionalProperties": false,
+      "properties": {
+        "start": {
+          "format": "date-time",
+          "title": "Start",
+          "type": "string"
+        },
+        "end": {
+          "format": "date-time",
+          "title": "End",
+          "type": "string"
+        },
+        "time_zone": {
+          "const": "UTC",
+          "default": "UTC",
+          "title": "Time Zone",
+          "type": "string"
+        }
+      },
+      "required": [
+        "start",
+        "end"
+      ],
+      "title": "DigestWindow",
+      "type": "object"
+    },
+    "Match": {
+      "additionalProperties": false,
+      "properties": {
+        "work_item": {
+          "title": "Work Item",
+          "type": "string"
+        },
+        "score": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Score",
+          "type": "number"
+        },
+        "method": {
+          "enum": [
+            "fingerprint",
+            "exact_identifier",
+            "fuzzy_title"
+          ],
+          "title": "Method",
+          "type": "string"
+        },
+        "explanation": {
+          "minLength": 1,
+          "title": "Explanation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "work_item",
+        "score",
+        "method",
+        "explanation"
+      ],
+      "title": "Match",
+      "type": "object"
+    },
+    "SectionSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "signal_count": {
+          "minimum": 0,
+          "title": "Signal Count",
+          "type": "integer"
+        },
+        "affected_components": {
+          "minimum": 0,
+          "title": "Affected Components",
+          "type": "integer"
+        },
+        "severity_counts": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "title": "Severity Counts",
+          "type": "object"
+        }
+      },
+      "required": [
+        "signal_count",
+        "affected_components"
+      ],
+      "title": "SectionSummary",
+      "type": "object"
+    },
+    "Signal": {
+      "additionalProperties": false,
+      "description": "A normalized finding emitted by any source.",
+      "properties": {
+        "kind": {
+          "minLength": 1,
+          "title": "Kind",
+          "type": "string"
+        },
+        "component": {
+          "minLength": 1,
+          "title": "Component",
+          "type": "string"
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Version"
+        },
+        "environment": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Environment"
+        },
+        "message": {
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        },
+        "count": {
+          "default": 1,
+          "minimum": 1,
+          "title": "Count",
+          "type": "integer"
+        },
+        "first_seen": {
+          "format": "date-time",
+          "title": "First Seen",
+          "type": "string"
+        },
+        "last_seen": {
+          "format": "date-time",
+          "title": "Last Seen",
+          "type": "string"
+        },
+        "links": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Links",
+          "type": "array"
+        },
+        "raw": {
+          "additionalProperties": true,
+          "title": "Raw",
+          "type": "object"
+        }
+      },
+      "required": [
+        "kind",
+        "component",
+        "message",
+        "first_seen",
+        "last_seen"
+      ],
+      "title": "Signal",
+      "type": "object"
+    },
+    "SourceHealthSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "source_id": {
+          "title": "Source Id",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "healthy",
+            "degraded",
+            "failed"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "duration_ms": {
+          "minimum": 0,
+          "title": "Duration Ms",
+          "type": "integer"
+        },
+        "signal_count": {
+          "minimum": 0,
+          "title": "Signal Count",
+          "type": "integer"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Error"
+        }
+      },
+      "required": [
+        "source_id",
+        "status",
+        "duration_ms",
+        "signal_count"
+      ],
+      "title": "SourceHealthSummary",
+      "type": "object"
+    },
+    "Suppression": {
+      "additionalProperties": false,
+      "properties": {
+        "state": {
+          "default": "active",
+          "enum": [
+            "active",
+            "suppressed",
+            "resurfaced"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reason"
+        },
+        "work_item": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Work Item"
+        },
+        "expires_on": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expires On"
+        },
+        "spike_guard_triggered": {
+          "default": false,
+          "title": "Spike Guard Triggered",
+          "type": "boolean"
+        }
+      },
+      "title": "Suppression",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Versioned canonical artifact consumed by renderers and future agents.",
+  "properties": {
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "generated_at": {
+      "format": "date-time",
+      "title": "Generated At",
+      "type": "string"
+    },
+    "run_id": {
+      "title": "Run Id",
+      "type": "string"
+    },
+    "team_id": {
+      "title": "Team Id",
+      "type": "string"
+    },
+    "window": {
+      "$ref": "#/$defs/DigestWindow"
     },
     "status": {
-      "type": "object",
-      "required": ["overall", "degraded", "source_health"],
-      "properties": {
-        "overall": {"enum": ["healthy", "degraded", "failed"]},
-        "degraded": {"type": "boolean"},
-        "source_health": {"type": "array", "items": {"$ref": "#/$defs/sourceHealth"}}
-      },
-      "additionalProperties": false
+      "$ref": "#/$defs/DigestStatus"
     },
-    "sections": {"type": "array", "items": {"$ref": "#/$defs/section"}},
+    "sections": {
+      "items": {
+        "$ref": "#/$defs/DigestSection"
+      },
+      "title": "Sections",
+      "type": "array"
+    },
     "metadata": {
-      "type": "object",
-      "required": ["config_revision", "processor_version"],
-      "properties": {
-        "config_revision": {"type": "string"},
-        "processor_version": {"type": "string"}
-      },
-      "additionalProperties": false
+      "$ref": "#/$defs/DigestMetadata"
     }
   },
-  "$defs": {
-    "sourceHealth": {
-      "type": "object",
-      "required": ["source_id", "status", "duration_ms", "signal_count"],
-      "properties": {
-        "source_id": {"type": "string"},
-        "status": {"enum": ["healthy", "degraded", "failed"]},
-        "duration_ms": {"type": "integer", "minimum": 0},
-        "signal_count": {"type": "integer", "minimum": 0},
-        "error": {"type": ["string", "null"]}
-      },
-      "additionalProperties": false
-    },
-    "section": {
-      "type": "object",
-      "required": ["id", "title", "ordering", "summary", "items"],
-      "properties": {
-        "id": {"type": "string"},
-        "title": {"type": "string"},
-        "ordering": {"type": "integer"},
-        "summary": {"type": "object"},
-        "items": {"type": "array"}
-      },
-      "additionalProperties": false
-    }
-  },
-  "additionalProperties": false
+  "required": [
+    "generated_at",
+    "run_id",
+    "team_id",
+    "window",
+    "status",
+    "metadata"
+  ],
+  "title": "DigestDocument",
+  "type": "object"
 }

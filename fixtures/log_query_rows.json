@@ -1,0 +1,22 @@
+[
+  {
+    "kind": "error",
+    "component": "payments-api",
+    "environment": "prod",
+    "message": "Timeout calling dependency /srv/payments/client.py:42 request 9182",
+    "count": 7,
+    "first_seen": "2026-11-20T08:00:00Z",
+    "last_seen": "2026-11-20T12:00:00Z",
+    "links": ["https://example.invalid/logs/payments"]
+  },
+  {
+    "kind": "error",
+    "component": "payments-api",
+    "environment": "prod",
+    "message": "Timeout calling dependency /srv/payments/client.py:99 request 10231",
+    "count": 3,
+    "first_seen": "2026-11-20T08:10:00Z",
+    "last_seen": "2026-11-20T12:10:00Z",
+    "links": ["https://example.invalid/logs/payments"]
+  }
+]

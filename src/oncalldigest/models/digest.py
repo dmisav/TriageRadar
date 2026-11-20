@@ -1,9 +1,11 @@
 """Canonical digest.json v1 models."""
 
 from datetime import UTC, datetime
-from typing import Any, Literal
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+from oncalldigest.models.signals import Signal
 
 
 def _utc(value: datetime) -> datetime:
@@ -38,6 +40,7 @@ class DigestStatus(BaseModel):
 
     overall: Literal["healthy", "degraded", "failed"]
     degraded: bool
+    data_health_banner: str
     source_health: list[SourceHealthSummary] = Field(default_factory=list)
 
 
@@ -63,7 +66,7 @@ class Match(BaseModel):
 class DigestItem(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    signal: dict[str, Any]
+    signal: Signal
     fingerprint: str = Field(min_length=1)
     severity: str = Field(min_length=1)
     suppression: Suppression = Field(default_factory=Suppression)
@@ -93,6 +96,8 @@ class DigestMetadata(BaseModel):
 
     config_revision: str
     processor_version: str
+    source_counts: dict[str, int] = Field(default_factory=dict)
+    mode: str = "live"
 
 
 class DigestDocument(BaseModel):

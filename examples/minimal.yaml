@@ -1,11 +1,22 @@
 team_id: example-team
 config_revision: "1"
 time_zone: UTC
-sources: []
+suppression_file: examples/suppressions.yaml
+sources:
+  - id: example-health
+    type: log_query
+    settings:
+      mode: fixture
+      fixture: fixtures/log_query_rows.json
 sections:
   - id: failures
     title: Failures
     ordering: 10
-    signal_kinds: [test_failure]
+    signal_kinds: [error]
     threshold: 1
     grouping_key: component
+tracker:
+  type: azure_devops
+  settings:
+    mode: fixture
+    fixture: fixtures/azure_devops_work_items.json

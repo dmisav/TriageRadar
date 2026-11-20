@@ -1,0 +1,20 @@
+[
+  {
+    "tracker": "azure_devops",
+    "key": "PAY-123",
+    "title": "Timeout calling dependency",
+    "description": "Investigate payment dependency timeouts",
+    "url": "https://example.invalid/work-items/PAY-123",
+    "labels": ["oncall"],
+    "status": "Active"
+  },
+  {
+    "tracker": "azure_devops",
+    "key": "OTHER-1",
+    "title": "Update documentation",
+    "description": "",
+    "url": "https://example.invalid/work-items/OTHER-1",
+    "labels": [],
+    "status": "Active"
+  }
+]

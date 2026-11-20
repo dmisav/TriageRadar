@@ -41,6 +41,7 @@ class TeamConfig(BaseModel):
     sources: list[SourceConfig] = Field(default_factory=list)
     sections: list[SectionConfig] = Field(default_factory=list)
     tracker: dict[str, Any] | None = None
+    suppression_file: str | None = None
 
 
 def _substitute(value: Any) -> Any:

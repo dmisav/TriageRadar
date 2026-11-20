@@ -1,0 +1,5 @@
+- field: component
+  substring: payments-api
+  reason: Known dependency maintenance window
+  work_item: PAY-123
+  expires_on: 2099-12-31

@@ -1,43 +1,151 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://oncalldigest.dev/schemas/config.v1.schema.json",
-  "title": "OnCallDigest team configuration",
-  "type": "object",
-  "required": ["team_id", "config_revision", "time_zone", "sources", "sections"],
-  "properties": {
-    "team_id": {"type": "string", "minLength": 1},
-    "config_revision": {"type": "string", "minLength": 1},
-    "time_zone": {"type": "string", "default": "UTC"},
-    "sources": {"type": "array", "items": {"$ref": "#/$defs/source"}},
-    "sections": {"type": "array", "items": {"$ref": "#/$defs/section"}},
-    "tracker": {"type": ["object", "null"]}
+  "$defs": {
+    "SectionConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "title": {
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "ordering": {
+          "title": "Ordering",
+          "type": "integer"
+        },
+        "signal_kinds": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Signal Kinds",
+          "type": "array"
+        },
+        "threshold": {
+          "default": 1,
+          "minimum": 1,
+          "title": "Threshold",
+          "type": "integer"
+        },
+        "grouping_key": {
+          "default": "component",
+          "title": "Grouping Key",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "ordering",
+        "signal_kinds"
+      ],
+      "title": "SectionConfig",
+      "type": "object"
+    },
+    "SourceConfig": {
+      "additionalProperties": true,
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "type": {
+          "minLength": 1,
+          "title": "Type",
+          "type": "string"
+        },
+        "timeout_seconds": {
+          "default": 30,
+          "exclusiveMinimum": 0,
+          "title": "Timeout Seconds",
+          "type": "number"
+        },
+        "retries": {
+          "default": 2,
+          "minimum": 0,
+          "title": "Retries",
+          "type": "integer"
+        },
+        "settings": {
+          "additionalProperties": true,
+          "title": "Settings",
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "type"
+      ],
+      "title": "SourceConfig",
+      "type": "object"
+    }
   },
   "additionalProperties": false,
-  "$defs": {
-    "source": {
-      "type": "object",
-      "required": ["id", "type"],
-      "properties": {
-        "id": {"type": "string", "minLength": 1},
-        "type": {"type": "string", "minLength": 1},
-        "timeout_seconds": {"type": "number", "exclusiveMinimum": 0, "default": 30},
-        "retries": {"type": "integer", "minimum": 0, "default": 2},
-        "settings": {"type": "object"}
-      },
-      "additionalProperties": true
+  "properties": {
+    "team_id": {
+      "minLength": 1,
+      "title": "Team Id",
+      "type": "string"
     },
-    "section": {
-      "type": "object",
-      "required": ["id", "title", "ordering", "signal_kinds"],
-      "properties": {
-        "id": {"type": "string", "minLength": 1},
-        "title": {"type": "string", "minLength": 1},
-        "ordering": {"type": "integer"},
-        "signal_kinds": {"type": "array", "minItems": 1, "items": {"type": "string"}},
-        "threshold": {"type": "integer", "minimum": 1, "default": 1},
-        "grouping_key": {"type": "string", "default": "component"}
+    "config_revision": {
+      "minLength": 1,
+      "title": "Config Revision",
+      "type": "string"
+    },
+    "time_zone": {
+      "default": "UTC",
+      "title": "Time Zone",
+      "type": "string"
+    },
+    "sources": {
+      "items": {
+        "$ref": "#/$defs/SourceConfig"
       },
-      "additionalProperties": false
+      "title": "Sources",
+      "type": "array"
+    },
+    "sections": {
+      "items": {
+        "$ref": "#/$defs/SectionConfig"
+      },
+      "title": "Sections",
+      "type": "array"
+    },
+    "tracker": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Tracker"
+    },
+    "suppression_file": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Suppression File"
     }
-  }
+  },
+  "required": [
+    "team_id",
+    "config_revision"
+  ],
+  "title": "TeamConfig",
+  "type": "object"
 }
