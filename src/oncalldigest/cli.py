@@ -45,3 +45,7 @@ def main() -> int:
         print("init scaffolding is reserved for Phase 4")
         return 0
     return 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
