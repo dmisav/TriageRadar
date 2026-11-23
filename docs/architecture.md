@@ -146,17 +146,37 @@ digest.json
     -> triage HTML report
 ```
 
-The CLI integration is explicit:
+There are two AI execution modes.
+
+### External agent/API/MCP mode
+
+Use this for scheduled or unattended runs:
 
 ```bash
 oncalldigest run --config config.yaml --output-dir out --with-ai
 ```
 
-This first writes the deterministic digest, then invokes the external command
-from `ONCALLDIGEST_AI_COMMAND` with `--config`, `--digest`, and `--output`
-arguments. The command must write the triage JSON artifact. The CLI validates
-and renders it before succeeding. Omitting `--with-ai` produces the
-deterministic-only report.
+The CLI first writes the deterministic digest, then invokes the external
+command from `ONCALLDIGEST_AI_COMMAND` with `--config`, `--digest`, and
+`--output` arguments. The command may call an API such as Gemini, OpenAI, Azure
+OpenAI, or an agent backed by MCP read-only tools. It must write the triage
+JSON artifact. The CLI validates and renders it before succeeding.
+
+### VS Code Copilot mode
+
+Use this for interactive analysis and explicit approval:
+
+```bash
+oncalldigest run --config config.yaml --output-dir out
+```
+
+Then invoke `/oncall-triage` in VS Code Copilot Chat. Copilot reads
+`out/digest.json`, loads the workspace skill and team references, performs
+approved read-only investigations, and writes the triage artifact. In this
+mode Copilot is the external agent; no `ONCALLDIGEST_AI_COMMAND` is needed.
+
+Both modes use the same `triage.v1` schema and approval guardrails. Omitting
+both AI modes produces the deterministic-only report.
 
 The triage artifact is validated by
 [triage.v1.schema.json](../schemas/triage.v1.schema.json). Every row must cite

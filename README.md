@@ -124,18 +124,74 @@ can consume the structured output without scraping HTML.
 
 ## AI-assisted triage
 
-The deterministic digest is the input to the recommended Copilot skill at
-[.github/skills/oncall-triage](.github/skills/oncall-triage). The skill:
+The deterministic digest is the input to the triage layer at
+[.github/skills/oncall-triage](.github/skills/oncall-triage). There are two
+supported ways to run AI-assisted analysis.
+
+### Option 1: External agent, API, or MCP adapter
+
+Use this mode for scheduled or unattended workflows. The configured external
+program can call Gemini, OpenAI, Azure OpenAI, an internal model, or an agent
+that uses MCP read-only tools.
+
+Configure the adapter command in local `.env` or the production environment:
+
+```dotenv
+ONCALLDIGEST_AI_COMMAND=python path/to/triage_agent.py
+ONCALLDIGEST_AI_TIMEOUT_SECONDS=900
+```
+
+The adapter receives `--config`, `--digest`, and `--output` arguments. It must
+read the deterministic digest and write the structured triage artifact:
+
+```bash
+uv run oncalldigest run \
+  --config examples/full.yaml \
+  --output-dir ./out \
+  --with-ai
+```
+
+This produces:
+
+```text
+out/digest.json
+out/digest.html
+out/triage-YYYY-MM-DD.json
+out/triage-YYYY-MM-DD.html
+```
+
+The repository defines the adapter contract but does not include a provider
+API client. The adapter is responsible for authenticating to the selected AI
+provider. Never pass `.env`, tokens, or credentials to the model.
+
+### Option 2: VS Code Copilot interactive mode
+
+Use this mode for interactive investigation and approval in VS Code:
+
+```bash
+uv run oncalldigest run \
+  --config examples/minimal.yaml \
+  --output-dir ./out
+```
+
+Then invoke the workspace skill in Copilot Chat:
+
+```text
+/oncall-triage
+```
+
+Copilot reads `out/digest.json`, follows the team playbook, uses approved
+read-only investigation tools, and produces the triage artifact. This mode
+uses the Copilot model serving the current VS Code session instead of an
+`ONCALLDIGEST_AI_COMMAND` API adapter.
+
+Both modes use the same skill guidance and triage schema. The skill:
 
 1. Reviews digest sections top-down.
 2. Looks up known patterns and prior verdicts.
 3. Uses read-only investigation helpers.
 4. Produces a separate `triage-YYYY-MM-DD.json` artifact.
 5. Renders the artifact to HTML after validation.
-
-When using the Copilot skill directly, generate the digest first and then
-invoke `/oncall-triage`. When using the CLI integration, configure
-`ONCALLDIGEST_AI_COMMAND` and pass `--with-ai`.
 
 Validate or render a triage artifact with:
 

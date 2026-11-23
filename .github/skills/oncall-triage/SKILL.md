@@ -11,6 +11,20 @@ This skill operates above the deterministic OnCallDigest core. Treat
 `digest.json` as the source artifact and produce a separate
 `triage-YYYY-MM-DD.json`. Never rewrite the digest to store an AI conclusion.
 
+## Execution modes
+
+This skill supports two execution modes:
+
+1. **VS Code Copilot mode**: generate `digest.json`, then invoke
+   `/oncall-triage` in Copilot Chat. Copilot supplies the model reasoning and
+   follows this skill interactively.
+2. **External agent mode**: configure `ONCALLDIGEST_AI_COMMAND` and run
+   `oncalldigest run --with-ai`. The external adapter may call Gemini, OpenAI,
+   Azure OpenAI, an internal model, or an MCP-backed agent. It receives the
+   digest path and must write the triage JSON path supplied by the CLI.
+
+Both modes use this procedure, the same references, and the same triage schema.
+
 ## Daily procedure
 
 1. Run or locate the deterministic digest.
