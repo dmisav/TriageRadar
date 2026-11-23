@@ -12,7 +12,7 @@
 5. Validate locally:
 
    ```bash
-   uv run oncalldigest validate path/to/team.yaml
+   uv run oncallradar validate path/to/team.yaml
    ```
 
 6. Copy [.env.example](../.env.example) to `.env` for local-only values and

@@ -16,7 +16,7 @@ from oncalldigest.triage import write_html
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(prog="oncalldigest")
+    parser = argparse.ArgumentParser(prog="oncallradar")
     subparsers = parser.add_subparsers(dest="command", required=True)
     validate = subparsers.add_parser("validate")
     validate.add_argument("config", type=Path)

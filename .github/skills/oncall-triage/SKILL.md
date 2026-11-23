@@ -7,7 +7,7 @@ user-invocable: true
 
 # On-call triage
 
-This skill operates above the deterministic OnCallDigest core. Treat
+This skill operates above the deterministic OnCallRadar core. Treat
 `digest.json` as the source artifact and produce a separate
 `triage-YYYY-MM-DD.json`. Never rewrite the digest to store an AI conclusion.
 
@@ -19,7 +19,7 @@ This skill supports two execution modes:
    `/oncall-triage` in Copilot Chat. Copilot supplies the model reasoning and
    follows this skill interactively.
 2. **External agent mode**: configure `ONCALLDIGEST_AI_COMMAND` and run
-   `oncalldigest run --with-ai`. The external adapter may call Gemini, OpenAI,
+   `oncallradar run --with-ai`. The external adapter may call Gemini, OpenAI,
    Azure OpenAI, an internal model, or an MCP-backed agent. It receives the
    digest path and must write the triage JSON path supplied by the CLI.
 

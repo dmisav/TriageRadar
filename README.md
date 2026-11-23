@@ -1,9 +1,9 @@
-# OnCallDigest
+# OnCallRadar
 
 Configurable on-call health digests with an AI-assisted triage workflow
 for any team or product.
 
-OnCallDigest has two layers:
+OnCallRadar has two layers:
 
 1. A deterministic core that collects health signals, correlates them with
    existing work items, applies configured processing and suppression rules,
@@ -38,8 +38,8 @@ The current example demonstrates:
 
 ```bash
 uv sync --extra dev
-uv run oncalldigest validate examples/minimal.yaml
-uv run oncalldigest run \
+uv run oncallradar validate examples/minimal.yaml
+uv run oncallradar run \
   --config examples/minimal.yaml \
   --output-dir ./out \
   --with-ai
@@ -59,7 +59,7 @@ renders that artifact before reporting success.
 For deterministic-only output, omit `--with-ai`:
 
 ```bash
-uv run oncalldigest run \
+uv run oncallradar run \
   --config examples/minimal.yaml \
   --output-dir ./out
 ```
@@ -75,15 +75,15 @@ Then open <http://127.0.0.1:8765/digest.html>.
 To render and validate an existing digest:
 
 ```bash
-uv run oncalldigest render --from ./out/digest.json
+uv run oncallradar render --from ./out/digest.json
 ```
 
 ## CLI
 
 ```text
-oncalldigest validate CONFIG
-oncalldigest run --config CONFIG --output-dir DIRECTORY [--run-id ID] [--with-ai]
-oncalldigest render --from DIGEST_JSON
+oncallradar validate CONFIG
+oncallradar run --config CONFIG --output-dir DIRECTORY [--run-id ID] [--with-ai]
+oncallradar render --from DIGEST_JSON
 ```
 
 `validate` loads dotenv values for local development, resolves environment
@@ -97,10 +97,13 @@ values with `$(VAR)` or `${VAR:-default}`; do not put endpoints, tokens,
 connection strings, tenant IDs, or recipients directly in YAML. Copy
 [.env.example](.env.example) to a local `.env` for development only.
 
-`oncalldigest validate` reports every missing or empty required variable by
+`oncallradar validate` reports every missing or empty required variable by
 name, never its value. Production deployments should inject the same variables
 through runtime environment, Key Vault references, pipeline secrets, or
 container secrets. The image must not contain a `.env` file.
+
+The legacy `oncalldigest` command remains available as a compatibility alias,
+but new scripts should use `oncallradar`.
 
 Use [examples/minimal.yaml](examples/minimal.yaml) for an offline fixture-backed
 run and [examples/full.yaml](examples/full.yaml) as a live configuration
@@ -145,7 +148,7 @@ The adapter receives `--config`, `--digest`, and `--output` arguments. It must
 read the deterministic digest and write the structured triage artifact:
 
 ```bash
-uv run oncalldigest run \
+uv run oncallradar run \
   --config examples/full.yaml \
   --output-dir ./out \
   --with-ai
@@ -169,7 +172,7 @@ provider. Never pass `.env`, tokens, or credentials to the model.
 Use this mode for interactive investigation and approval in VS Code:
 
 ```bash
-uv run oncalldigest run \
+uv run oncallradar run \
   --config examples/minimal.yaml \
   --output-dir ./out
 ```
@@ -196,8 +199,8 @@ Both modes use the same skill guidance and triage schema. The skill:
 Validate or render a triage artifact with:
 
 ```bash
-uv run oncalldigest triage-validate triage-2026-11-20.json
-uv run oncalldigest triage-render \
+uv run oncallradar triage-validate triage-2026-11-20.json
+uv run oncallradar triage-render \
   --from triage-2026-11-20.json \
   --output triage-2026-11-20.html
 ```

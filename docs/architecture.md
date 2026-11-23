@@ -1,8 +1,8 @@
-# OnCallDigest architecture
+# OnCallRadar architecture
 
 ## Purpose
 
-OnCallDigest combines a deterministic operational data service with an optional
+OnCallRadar combines a deterministic operational data service with an optional
 AI-assisted triage workflow. The deterministic core collects operational
 signals, correlates them with existing work items, applies configured rules,
 and publishes a canonical `digest.json`. The AI layer consumes that artifact,
@@ -20,7 +20,7 @@ guardrails.
 flowchart LR
     Config["config.yaml<br/>non-secret"] --> Loader["Config loader<br/>Pydantic + dotenv"]
     Env["Runtime environment<br/>.env locally / secret injection in prod"] --> Loader
-    Loader --> Run["CLI: oncalldigest run"]
+    Loader --> Run["CLI: oncallradar run"]
 
     Run --> Sources["Source collection"]
     Sources --> Log["LogQuerySource<br/>KQL / ADX"]
@@ -153,7 +153,7 @@ There are two AI execution modes.
 Use this for scheduled or unattended runs:
 
 ```bash
-oncalldigest run --config config.yaml --output-dir out --with-ai
+oncallradar run --config config.yaml --output-dir out --with-ai
 ```
 
 The CLI first writes the deterministic digest, then invokes the external
@@ -167,7 +167,7 @@ JSON artifact. The CLI validates and renders it before succeeding.
 Use this for interactive analysis and explicit approval:
 
 ```bash
-oncalldigest run --config config.yaml --output-dir out
+oncallradar run --config config.yaml --output-dir out
 ```
 
 Then invoke `/oncall-triage` in VS Code Copilot Chat. Copilot reads
