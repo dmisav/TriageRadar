@@ -135,7 +135,8 @@ fallbacks and are never serialized into the digest.
 
 ## AI-assisted triage layer
 
-The AI layer is intentionally downstream from the deterministic core:
+The recommended application workflow is AI-assisted, while the deterministic
+core remains independently runnable. The AI layer is downstream from the core:
 
 ```text
 digest.json
@@ -144,6 +145,18 @@ digest.json
     -> triage-YYYY-MM-DD.json
     -> triage HTML report
 ```
+
+The CLI integration is explicit:
+
+```bash
+oncalldigest run --config config.yaml --output-dir out --with-ai
+```
+
+This first writes the deterministic digest, then invokes the external command
+from `ONCALLDIGEST_AI_COMMAND` with `--config`, `--digest`, and `--output`
+arguments. The command must write the triage JSON artifact. The CLI validates
+and renders it before succeeding. Omitting `--with-ai` produces the
+deterministic-only report.
 
 The triage artifact is validated by
 [triage.v1.schema.json](../schemas/triage.v1.schema.json). Every row must cite

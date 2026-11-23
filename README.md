@@ -12,8 +12,10 @@ OnCallDigest has two layers:
    consults team-maintained patterns, proposes verdicts and actions, and emits
    a separate `triage-YYYY-MM-DD.json` artifact.
 
-The AI layer is intentionally non-deterministic and operates only on top of
-the deterministic digest. It does not replace or mutate the core output.
+The recommended application workflow is AI-assisted: generate the deterministic
+digest, then invoke the triage agent to produce a triage report. The AI layer is
+non-deterministic and operates only on top of the deterministic digest. It does
+not replace or mutate the core output.
 
 ## What is working
 
@@ -37,12 +39,30 @@ The current example demonstrates:
 ```bash
 uv sync --extra dev
 uv run oncalldigest validate examples/minimal.yaml
-uv run oncalldigest run --config examples/minimal.yaml --output-dir ./out
+uv run oncalldigest run \
+  --config examples/minimal.yaml \
+  --output-dir ./out \
+  --with-ai
 ```
 
 The command writes `out/digest.json` (the canonical artifact) and
-`out/digest.html`. Install `uv sync --extra azure` for live ADX authentication
-through `DefaultAzureCredential`.
+`out/digest.html`, and when `--with-ai` is used it also writes
+`out/triage-YYYY-MM-DD.json` and `out/triage-YYYY-MM-DD.html`. Install
+`uv sync --extra azure` for live ADX authentication through
+`DefaultAzureCredential`.
+
+The `--with-ai` option invokes the command configured by
+`ONCALLDIGEST_AI_COMMAND`. The external command must read the supplied
+`digest.json` and write the supplied triage JSON artifact. The CLI validates and
+renders that artifact before reporting success.
+
+For deterministic-only output, omit `--with-ai`:
+
+```bash
+uv run oncalldigest run \
+  --config examples/minimal.yaml \
+  --output-dir ./out
+```
 
 To open the generated HTML locally:
 
@@ -62,7 +82,7 @@ uv run oncalldigest render --from ./out/digest.json
 
 ```text
 oncalldigest validate CONFIG
-oncalldigest run --config CONFIG --output-dir DIRECTORY [--run-id ID]
+oncalldigest run --config CONFIG --output-dir DIRECTORY [--run-id ID] [--with-ai]
 oncalldigest render --from DIGEST_JSON
 ```
 
@@ -104,7 +124,7 @@ can consume the structured output without scraping HTML.
 
 ## AI-assisted triage
 
-The deterministic digest is the input to the optional Copilot skill at
+The deterministic digest is the input to the recommended Copilot skill at
 [.github/skills/oncall-triage](.github/skills/oncall-triage). The skill:
 
 1. Reviews digest sections top-down.
@@ -112,6 +132,10 @@ The deterministic digest is the input to the optional Copilot skill at
 3. Uses read-only investigation helpers.
 4. Produces a separate `triage-YYYY-MM-DD.json` artifact.
 5. Renders the artifact to HTML after validation.
+
+When using the Copilot skill directly, generate the digest first and then
+invoke `/oncall-triage`. When using the CLI integration, configure
+`ONCALLDIGEST_AI_COMMAND` and pass `--with-ai`.
 
 Validate or render a triage artifact with:
 
