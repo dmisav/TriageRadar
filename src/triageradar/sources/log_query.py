@@ -8,9 +8,9 @@ from typing import Any, cast
 
 import httpx
 
-from oncalldigest.config import redact_secrets
-from oncalldigest.models.signals import Signal, SourceHealth, SourceResult
-from oncalldigest.plugins.base import RunContext, Source
+from triageradar.config import redact_secrets
+from triageradar.models.signals import Signal, SourceHealth, SourceResult
+from triageradar.plugins.base import RunContext, Source
 
 
 class LogQuerySource(Source):

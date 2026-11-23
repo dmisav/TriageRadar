@@ -21,11 +21,11 @@ and explicit approval remain mandatory.
 Run helpers from the repository root:
 
 ```bash
-python .github/skills/oncall-triage/scripts/investigation/inspect_digest.py digest.json
-python .github/skills/oncall-triage/scripts/investigation/run_log_query.py fixtures/log_query_rows.json --component payments-api
-python .github/skills/oncall-triage/scripts/investigation/fetch_artifact.py path/to/build.log
-python .github/skills/oncall-triage/scripts/investigation/search_work_items.py fixtures/azure_devops_work_items.json payments
-python .github/skills/oncall-triage/scripts/investigation/read_history.py history.json fingerprint
+python .github/skills/triage-radar/scripts/investigation/inspect_digest.py digest.json
+python .github/skills/triage-radar/scripts/investigation/run_log_query.py fixtures/log_query_rows.json --component payments-api
+python .github/skills/triage-radar/scripts/investigation/fetch_artifact.py path/to/build.log
+python .github/skills/triage-radar/scripts/investigation/search_work_items.py fixtures/azure_devops_work_items.json payments
+python .github/skills/triage-radar/scripts/investigation/read_history.py history.json fingerprint
 ```
 
 These helpers read files and print bounded evidence. They do not call tracker

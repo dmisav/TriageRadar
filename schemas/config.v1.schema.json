@@ -9,22 +9,22 @@
           "type": "boolean"
         },
         "playbook_file": {
-          "default": ".github/skills/oncall-triage/SKILL.md",
+          "default": ".github/skills/triage-radar/SKILL.md",
           "title": "Playbook File",
           "type": "string"
         },
         "known_patterns_file": {
-          "default": ".github/skills/oncall-triage/references/known-patterns.md",
+          "default": ".github/skills/triage-radar/references/known-patterns.md",
           "title": "Known Patterns File",
           "type": "string"
         },
         "ownership_file": {
-          "default": ".github/skills/oncall-triage/references/ownership-and-filing.md",
+          "default": ".github/skills/triage-radar/references/ownership-and-filing.md",
           "title": "Ownership File",
           "type": "string"
         },
         "investigation_toolkit_file": {
-          "default": ".github/skills/oncall-triage/references/investigation-toolkit.md",
+          "default": ".github/skills/triage-radar/references/investigation-toolkit.md",
           "title": "Investigation Toolkit File",
           "type": "string"
         },

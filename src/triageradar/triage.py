@@ -3,7 +3,7 @@
 from html import escape
 from pathlib import Path
 
-from oncalldigest.models.triage import TriageDocument
+from triageradar.models.triage import TriageDocument
 
 
 def load(path: Path) -> TriageDocument:

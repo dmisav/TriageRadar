@@ -1,9 +1,9 @@
-# OnCallRadar
+# TriageRadar
 
 Configurable on-call health digests with an AI-assisted triage workflow
 for any team or product.
 
-OnCallRadar has two layers:
+TriageRadar has two layers:
 
 1. A deterministic core that collects health signals, correlates them with
    existing work items, applies configured processing and suppression rules,
@@ -38,8 +38,8 @@ The current example demonstrates:
 
 ```bash
 uv sync --extra dev
-uv run oncallradar validate examples/minimal.yaml
-uv run oncallradar run \
+uv run triageradar validate examples/minimal.yaml
+uv run triageradar run \
   --config examples/minimal.yaml \
   --output-dir ./out \
   --with-ai
@@ -52,14 +52,14 @@ The command writes `out/digest.json` (the canonical artifact) and
 `DefaultAzureCredential`.
 
 The `--with-ai` option invokes the command configured by
-`ONCALLDIGEST_AI_COMMAND`. The external command must read the supplied
+`TRIAGERADAR_AI_COMMAND`. The external command must read the supplied
 `digest.json` and write the supplied triage JSON artifact. The CLI validates and
 renders that artifact before reporting success.
 
 For deterministic-only output, omit `--with-ai`:
 
 ```bash
-uv run oncallradar run \
+uv run triageradar run \
   --config examples/minimal.yaml \
   --output-dir ./out
 ```
@@ -75,15 +75,15 @@ Then open <http://127.0.0.1:8765/digest.html>.
 To render and validate an existing digest:
 
 ```bash
-uv run oncallradar render --from ./out/digest.json
+uv run triageradar render --from ./out/digest.json
 ```
 
 ## CLI
 
 ```text
-oncallradar validate CONFIG
-oncallradar run --config CONFIG --output-dir DIRECTORY [--run-id ID] [--with-ai]
-oncallradar render --from DIGEST_JSON
+triageradar validate CONFIG
+triageradar run --config CONFIG --output-dir DIRECTORY [--run-id ID] [--with-ai]
+triageradar render --from DIGEST_JSON
 ```
 
 `validate` loads dotenv values for local development, resolves environment
@@ -97,13 +97,10 @@ values with `$(VAR)` or `${VAR:-default}`; do not put endpoints, tokens,
 connection strings, tenant IDs, or recipients directly in YAML. Copy
 [.env.example](.env.example) to a local `.env` for development only.
 
-`oncallradar validate` reports every missing or empty required variable by
+`triageradar validate` reports every missing or empty required variable by
 name, never its value. Production deployments should inject the same variables
 through runtime environment, Key Vault references, pipeline secrets, or
 container secrets. The image must not contain a `.env` file.
-
-The legacy `oncalldigest` command remains available as a compatibility alias,
-but new scripts should use `oncallradar`.
 
 Use [examples/minimal.yaml](examples/minimal.yaml) for an offline fixture-backed
 run and [examples/full.yaml](examples/full.yaml) as a live configuration
@@ -120,7 +117,7 @@ for the initial architecture decisions.
 `digest.json` is the canonical, versioned output. Its structure is defined by
 [schemas/digest.v1.schema.json](schemas/digest.v1.schema.json) and represented
 at runtime by the typed models in
-[src/oncalldigest/models/digest.py](src/oncalldigest/models/digest.py).
+[src/triageradar/models/digest.py](src/triageradar/models/digest.py).
 
 The HTML report is derived from the JSON artifact, so downstream integrations
 can consume the structured output without scraping HTML.
@@ -128,7 +125,7 @@ can consume the structured output without scraping HTML.
 ## AI-assisted triage
 
 The deterministic digest is the input to the triage layer at
-[.github/skills/oncall-triage](.github/skills/oncall-triage). There are two
+[.github/skills/triage-radar](.github/skills/triage-radar). There are two
 supported ways to run AI-assisted analysis.
 
 ### Option 1: External agent, API, or MCP adapter
@@ -140,15 +137,15 @@ that uses MCP read-only tools.
 Configure the adapter command in local `.env` or the production environment:
 
 ```dotenv
-ONCALLDIGEST_AI_COMMAND=python path/to/triage_agent.py
-ONCALLDIGEST_AI_TIMEOUT_SECONDS=900
+TRIAGERADAR_AI_COMMAND=python path/to/triage_agent.py
+TRIAGERADAR_AI_TIMEOUT_SECONDS=900
 ```
 
 The adapter receives `--config`, `--digest`, and `--output` arguments. It must
 read the deterministic digest and write the structured triage artifact:
 
 ```bash
-uv run oncallradar run \
+uv run triageradar run \
   --config examples/full.yaml \
   --output-dir ./out \
   --with-ai
@@ -172,7 +169,7 @@ provider. Never pass `.env`, tokens, or credentials to the model.
 Use this mode for interactive investigation and approval in VS Code:
 
 ```bash
-uv run oncallradar run \
+uv run triageradar run \
   --config examples/minimal.yaml \
   --output-dir ./out
 ```
@@ -180,13 +177,13 @@ uv run oncallradar run \
 Then invoke the workspace skill in Copilot Chat:
 
 ```text
-/oncall-triage
+/triage-radar
 ```
 
 Copilot reads `out/digest.json`, follows the team playbook, uses approved
 read-only investigation tools, and produces the triage artifact. This mode
 uses the Copilot model serving the current VS Code session instead of an
-`ONCALLDIGEST_AI_COMMAND` API adapter.
+`TRIAGERADAR_AI_COMMAND` API adapter.
 
 Both modes use the same skill guidance and triage schema. The skill:
 
@@ -199,8 +196,8 @@ Both modes use the same skill guidance and triage schema. The skill:
 Validate or render a triage artifact with:
 
 ```bash
-uv run oncallradar triage-validate triage-2026-11-20.json
-uv run oncallradar triage-render \
+uv run triageradar triage-validate triage-2026-11-20.json
+uv run triageradar triage-render \
   --from triage-2026-11-20.json \
   --output triage-2026-11-20.html
 ```
@@ -227,7 +224,7 @@ the generated JSON and HTML reports.
 ## Project layout
 
 ```text
-src/oncalldigest/
+src/triageradar/
   cli.py                 CLI commands
   config.py              YAML, dotenv, environment references, redaction
   pipeline.py            End-to-end orchestration

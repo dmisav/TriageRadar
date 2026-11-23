@@ -4,9 +4,9 @@ import asyncio
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
-from oncalldigest.config import SourceConfig, TeamConfig
-from oncalldigest.delivery.file import publish
-from oncalldigest.models.digest import (
+from triageradar.config import SourceConfig, TeamConfig
+from triageradar.delivery.file import publish
+from triageradar.models.digest import (
     DigestDocument,
     DigestItem,
     DigestMetadata,
@@ -18,13 +18,13 @@ from oncalldigest.models.digest import (
     SourceHealthSummary,
     Suppression,
 )
-from oncalldigest.models.signals import SourceHealth, SourceResult
-from oncalldigest.models.work_items import WorkItem
-from oncalldigest.plugins.base import RunContext
-from oncalldigest.processors.aggregate import ProcessedSignal, process
-from oncalldigest.sources.log_query import LogQuerySource
-from oncalldigest.suppression import apply, load_rules
-from oncalldigest.trackers.azure_devops import AzureDevOpsTracker
+from triageradar.models.signals import SourceHealth, SourceResult
+from triageradar.models.work_items import WorkItem
+from triageradar.plugins.base import RunContext
+from triageradar.processors.aggregate import ProcessedSignal, process
+from triageradar.sources.log_query import LogQuerySource
+from triageradar.suppression import apply, load_rules
+from triageradar.trackers.azure_devops import AzureDevOpsTracker
 
 
 async def run(config: TeamConfig, output_dir: Path, run_id: str = "local-run") -> DigestDocument:

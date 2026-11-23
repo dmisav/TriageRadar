@@ -5,8 +5,8 @@ import re
 from collections import defaultdict
 from dataclasses import dataclass
 
-from oncalldigest.config import SectionConfig
-from oncalldigest.models.signals import Signal
+from triageradar.config import SectionConfig
+from triageradar.models.signals import Signal
 
 _GUID = re.compile(r"\b[0-9a-f]{8}-[0-9a-f-]{27,}\b", re.IGNORECASE)
 _NUMBER = re.compile(r"\b\d+(?:\.\d+)?\b")

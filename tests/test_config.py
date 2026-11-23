@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from oncalldigest.config import load_config, redact_secrets
+from triageradar.config import load_config, redact_secrets
 
 
 def test_minimal_config_loads() -> None:

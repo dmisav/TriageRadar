@@ -5,7 +5,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from oncalldigest.models.signals import Signal
+from triageradar.models.signals import Signal
 
 
 def _utc(value: datetime) -> datetime:

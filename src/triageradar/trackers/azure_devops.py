@@ -8,8 +8,8 @@ from typing import Any
 
 import httpx
 
-from oncalldigest.models.work_items import WorkItem
-from oncalldigest.plugins.base import RunContext, Tracker
+from triageradar.models.work_items import WorkItem
+from triageradar.plugins.base import RunContext, Tracker
 
 
 class AzureDevOpsTracker(Tracker):

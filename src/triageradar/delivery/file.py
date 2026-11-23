@@ -4,8 +4,8 @@ import json
 import os
 from pathlib import Path
 
-from oncalldigest.models.digest import DigestDocument
-from oncalldigest.rendering.html import render
+from triageradar.models.digest import DigestDocument
+from triageradar.rendering.html import render
 
 
 def publish(digest: DigestDocument, output_dir: Path) -> None:

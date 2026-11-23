@@ -1,8 +1,8 @@
 import json
 from pathlib import Path
 
-from oncalldigest.config import load_config
-from oncalldigest.pipeline import run
+from triageradar.config import load_config
+from triageradar.pipeline import run
 
 
 def test_example_run_writes_digest_and_html(tmp_path: Path) -> None:

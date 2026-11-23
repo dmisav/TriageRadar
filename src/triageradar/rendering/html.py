@@ -2,7 +2,7 @@
 
 from html import escape
 
-from oncalldigest.models.digest import DigestDocument
+from triageradar.models.digest import DigestDocument
 
 
 def render(digest: DigestDocument) -> str:

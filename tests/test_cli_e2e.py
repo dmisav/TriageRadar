@@ -15,7 +15,7 @@ def test_cli_run_generates_digest_and_html_report(tmp_path: Path) -> None:
         [
             sys.executable,
             "-m",
-            "oncalldigest.cli",
+            "triageradar.cli",
             "run",
             "--config",
             "examples/minimal.yaml",

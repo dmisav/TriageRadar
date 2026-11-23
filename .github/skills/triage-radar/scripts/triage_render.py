@@ -8,7 +8,7 @@ from pathlib import Path
 repository_root = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(repository_root / "src"))
 
-from oncalldigest.triage import load, write_html  # noqa: E402
+from triageradar.triage import load, write_html  # noqa: E402
 
 
 def main() -> int:

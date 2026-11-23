@@ -1,8 +1,8 @@
 from datetime import UTC, date, datetime
 from pathlib import Path
 
-from oncalldigest.models.signals import Signal
-from oncalldigest.models.triage import (
+from triageradar.models.signals import Signal
+from triageradar.models.triage import (
     ProposedAction,
     TriageDocument,
     TriageEvidence,
@@ -11,7 +11,7 @@ from oncalldigest.models.triage import (
     TriageSection,
     TriageVerdict,
 )
-from oncalldigest.triage import load, write_html
+from triageradar.triage import load, write_html
 
 
 def _document() -> TriageDocument:

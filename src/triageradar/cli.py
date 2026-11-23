@@ -8,15 +8,15 @@ import shlex
 import subprocess
 from pathlib import Path
 
-from oncalldigest.config import load_config, redact_secrets
-from oncalldigest.models.digest import DigestDocument
-from oncalldigest.pipeline import run
-from oncalldigest.triage import load as load_triage
-from oncalldigest.triage import write_html
+from triageradar.config import load_config, redact_secrets
+from triageradar.models.digest import DigestDocument
+from triageradar.pipeline import run
+from triageradar.triage import load as load_triage
+from triageradar.triage import write_html
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(prog="oncallradar")
+    parser = argparse.ArgumentParser(prog="triageradar")
     subparsers = parser.add_subparsers(dest="command", required=True)
     validate = subparsers.add_parser("validate")
     validate.add_argument("config", type=Path)
@@ -81,11 +81,11 @@ def main() -> int:
 
 def _run_ai_triage(config_path: Path, output_dir: Path, triage_date: str) -> None:
     """Invoke an explicitly configured external agent and validate its artifact."""
-    command_template = os.environ.get("ONCALLDIGEST_AI_COMMAND")
+    command_template = os.environ.get("TRIAGERADAR_AI_COMMAND")
     if not command_template:
         raise ValueError(
-            "--with-ai requires ONCALLDIGEST_AI_COMMAND; "
-            "use the oncall-triage Copilot skill or configure an agent command"
+            "--with-ai requires TRIAGERADAR_AI_COMMAND; "
+            "use the triage-radar Copilot skill or configure an agent command"
         )
     digest_path = output_dir / "digest.json"
     triage_path = output_dir / f"triage-{triage_date}.json"
@@ -107,7 +107,7 @@ def _run_ai_triage(config_path: Path, output_dir: Path, triage_date: str) -> Non
             str(triage_path),
         ]
     )
-    timeout = float(os.environ.get("ONCALLDIGEST_AI_TIMEOUT_SECONDS", "900"))
+    timeout = float(os.environ.get("TRIAGERADAR_AI_TIMEOUT_SECONDS", "900"))
     completed = subprocess.run(command, timeout=timeout, check=False)
     if completed.returncode != 0:
         raise RuntimeError(f"AI triage command failed with exit code {completed.returncode}")

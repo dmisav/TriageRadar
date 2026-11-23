@@ -33,11 +33,11 @@ class AiTriageConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     enabled: bool = False
-    playbook_file: str = ".github/skills/oncall-triage/SKILL.md"
-    known_patterns_file: str = ".github/skills/oncall-triage/references/known-patterns.md"
-    ownership_file: str = ".github/skills/oncall-triage/references/ownership-and-filing.md"
+    playbook_file: str = ".github/skills/triage-radar/SKILL.md"
+    known_patterns_file: str = ".github/skills/triage-radar/references/known-patterns.md"
+    ownership_file: str = ".github/skills/triage-radar/references/ownership-and-filing.md"
     investigation_toolkit_file: str = (
-        ".github/skills/oncall-triage/references/investigation-toolkit.md"
+        ".github/skills/triage-radar/references/investigation-toolkit.md"
     )
     section_verdict_rules: dict[str, list[str]] = Field(default_factory=dict)
 

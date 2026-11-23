@@ -1,8 +1,8 @@
-# OnCallRadar architecture
+# TriageRadar architecture
 
 ## Purpose
 
-OnCallRadar combines a deterministic operational data service with an optional
+TriageRadar combines a deterministic operational data service with an optional
 AI-assisted triage workflow. The deterministic core collects operational
 signals, correlates them with existing work items, applies configured rules,
 and publishes a canonical `digest.json`. The AI layer consumes that artifact,
@@ -20,7 +20,7 @@ guardrails.
 flowchart LR
     Config["config.yaml<br/>non-secret"] --> Loader["Config loader<br/>Pydantic + dotenv"]
     Env["Runtime environment<br/>.env locally / secret injection in prod"] --> Loader
-    Loader --> Run["CLI: oncallradar run"]
+    Loader --> Run["CLI: triageradar run"]
 
     Run --> Sources["Source collection"]
     Sources --> Log["LogQuerySource<br/>KQL / ADX"]
@@ -41,7 +41,7 @@ flowchart LR
     Digest --> HTML["HTML renderer"]
     HTML --> Report["digest.html"]
 
-    JSON --> Skill["Copilot skill<br/>oncall-triage"]
+    JSON --> Skill["Copilot skill<br/>triage-radar"]
     Skill --> Investigate["Read-only investigation tools"]
     Investigate --> Triage["triage-YYYY-MM-DD.json"]
     Triage --> TriageHTML["triage HTML renderer"]
@@ -70,7 +70,7 @@ flowchart LR
 9. Suppression YAML rules are applied.
 10. The pipeline builds the typed `DigestDocument`.
 11. The file delivery adapter atomically writes `digest.json` and `digest.html`.
-12. The optional `oncall-triage` Copilot skill consumes `digest.json`, consults
+12. The optional `triage-radar` Copilot skill consumes `digest.json`, consults
     team references, performs read-only investigations, and produces a
     separately versioned triage artifact.
 
@@ -78,20 +78,20 @@ flowchart LR
 
 | Area | Module | Responsibility |
 |---|---|---|
-| CLI | `src/oncalldigest/cli.py` | `validate`, `run`, and `render` commands |
-| Configuration | `src/oncalldigest/config.py` | YAML loading, environment substitution, dotenv loading, redaction |
-| Contracts | `src/oncalldigest/models/` | Pydantic models crossing pipeline boundaries |
-| Orchestration | `src/oncalldigest/pipeline.py` | Source execution, retry/timeout, correlation, digest construction |
-| Sources | `src/oncalldigest/sources/` | Provider adapters that produce normalized signals |
-| Trackers | `src/oncalldigest/trackers/` | Read-only work-item adapters |
-| Processing | `src/oncalldigest/processors/` | Generic thresholding, aggregation, and fingerprinting |
-| Suppression | `src/oncalldigest/suppression.py` | Validated YAML suppression rules |
-| Rendering | `src/oncalldigest/rendering/` | HTML presentation of the canonical digest |
-| Delivery | `src/oncalldigest/delivery/` | Atomic local artifact publishing |
-| Plugins | `src/oncalldigest/plugins/` | Source, tracker, state, renderer, and delivery contracts |
-| Triage contract | `src/oncalldigest/models/triage.py` | Versioned agent-produced triage artifact |
-| Triage rendering | `src/oncalldigest/triage.py` | Validation and static HTML rendering |
-| Copilot skill | `.github/skills/oncall-triage/` | Daily procedure, references, guardrails, and read-only helpers |
+| CLI | `src/triageradar/cli.py` | `validate`, `run`, and `render` commands |
+| Configuration | `src/triageradar/config.py` | YAML loading, environment substitution, dotenv loading, redaction |
+| Contracts | `src/triageradar/models/` | Pydantic models crossing pipeline boundaries |
+| Orchestration | `src/triageradar/pipeline.py` | Source execution, retry/timeout, correlation, digest construction |
+| Sources | `src/triageradar/sources/` | Provider adapters that produce normalized signals |
+| Trackers | `src/triageradar/trackers/` | Read-only work-item adapters |
+| Processing | `src/triageradar/processors/` | Generic thresholding, aggregation, and fingerprinting |
+| Suppression | `src/triageradar/suppression.py` | Validated YAML suppression rules |
+| Rendering | `src/triageradar/rendering/` | HTML presentation of the canonical digest |
+| Delivery | `src/triageradar/delivery/` | Atomic local artifact publishing |
+| Plugins | `src/triageradar/plugins/` | Source, tracker, state, renderer, and delivery contracts |
+| Triage contract | `src/triageradar/models/triage.py` | Versioned agent-produced triage artifact |
+| Triage rendering | `src/triageradar/triage.py` | Validation and static HTML rendering |
+| Copilot skill | `.github/skills/triage-radar/` | Daily procedure, references, guardrails, and read-only helpers |
 
 ## Data contracts
 
@@ -109,7 +109,7 @@ and deterministic ordering.
 
 ### Digest
 
-The canonical output is represented by [digest.py](../src/oncalldigest/models/digest.py)
+The canonical output is represented by [digest.py](../src/triageradar/models/digest.py)
 and described by [digest.v1.schema.json](../schemas/digest.v1.schema.json).
 Renderers and future consumers should use this artifact rather than reaching
 back into provider responses.
@@ -140,7 +140,7 @@ core remains independently runnable. The AI layer is downstream from the core:
 
 ```text
 digest.json
-    -> .github/skills/oncall-triage/SKILL.md
+    -> .github/skills/triage-radar/SKILL.md
     -> read-only investigation tools and team references
     -> triage-YYYY-MM-DD.json
     -> triage HTML report
@@ -153,11 +153,11 @@ There are two AI execution modes.
 Use this for scheduled or unattended runs:
 
 ```bash
-oncallradar run --config config.yaml --output-dir out --with-ai
+triageradar run --config config.yaml --output-dir out --with-ai
 ```
 
 The CLI first writes the deterministic digest, then invokes the external
-command from `ONCALLDIGEST_AI_COMMAND` with `--config`, `--digest`, and
+command from `TRIAGERADAR_AI_COMMAND` with `--config`, `--digest`, and
 `--output` arguments. The command may call an API such as Gemini, OpenAI, Azure
 OpenAI, or an agent backed by MCP read-only tools. It must write the triage
 JSON artifact. The CLI validates and renders it before succeeding.
@@ -167,13 +167,13 @@ JSON artifact. The CLI validates and renders it before succeeding.
 Use this for interactive analysis and explicit approval:
 
 ```bash
-oncallradar run --config config.yaml --output-dir out
+triageradar run --config config.yaml --output-dir out
 ```
 
-Then invoke `/oncall-triage` in VS Code Copilot Chat. Copilot reads
+Then invoke `/triage-radar` in VS Code Copilot Chat. Copilot reads
 `out/digest.json`, loads the workspace skill and team references, performs
 approved read-only investigations, and writes the triage artifact. In this
-mode Copilot is the external agent; no `ONCALLDIGEST_AI_COMMAND` is needed.
+mode Copilot is the external agent; no `TRIAGERADAR_AI_COMMAND` is needed.
 
 Both modes use the same `triage.v1` schema and approval guardrails. Omitting
 both AI modes produces the deterministic-only report.
@@ -208,7 +208,7 @@ to the learning section of known patterns after user approval.
 
 ## Extension architecture
 
-The plugin contracts in [plugins/base.py](../src/oncalldigest/plugins/base.py)
+The plugin contracts in [plugins/base.py](../src/triageradar/plugins/base.py)
 are the stable extension points:
 
 - Add sources through `Source`.

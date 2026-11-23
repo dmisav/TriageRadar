@@ -4,8 +4,8 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Protocol
 
-from oncalldigest.models.signals import Signal, SourceResult
-from oncalldigest.models.work_items import WorkItem
+from triageradar.models.signals import Signal, SourceResult
+from triageradar.models.work_items import WorkItem
 
 
 @dataclass(frozen=True)
