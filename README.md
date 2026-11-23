@@ -17,6 +17,9 @@ digest, then invoke the triage agent to produce a triage report. The AI layer is
 non-deterministic and operates only on top of the deterministic digest. It does
 not replace or mutate the core output.
 
+<img width="1157" height="743" alt="image" src="https://github.com/user-attachments/assets/efd4e2ea-3f05-4ccb-91f4-0a87f32e5f76" />
+
+
 ## What is working
 
 The vertical-slice MVP supports a KQL/ADX-style log-query source, read-only
