@@ -1,6 +1,6 @@
 # OnCallDigest
 
-Configurable on-call health digests with an optional AI-assisted triage workflow
+Configurable on-call health digests with an AI-assisted triage workflow
 for any team or product.
 
 OnCallDigest has two layers:
