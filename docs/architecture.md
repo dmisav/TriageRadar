@@ -2,13 +2,17 @@
 
 ## Purpose
 
-OnCallDigest is a deterministic service that collects operational signals,
-correlates them with existing work items, applies configured rules, and
-publishes a canonical `digest.json` plus a human-readable HTML report.
+OnCallDigest combines a deterministic operational data service with an optional
+AI-assisted triage workflow. The deterministic core collects operational
+signals, correlates them with existing work items, applies configured rules,
+and publishes a canonical `digest.json`. The AI layer consumes that artifact,
+investigates evidence, and publishes a separate triage artifact.
 
 Team and product behavior belongs in YAML configuration. Provider-specific
 authentication values belong in the runtime environment or a secret store.
-The core pipeline does not make LLM calls.
+The deterministic core pipeline does not make LLM calls. The optional triage
+workflow is non-deterministic by design and is governed by explicit approval
+guardrails.
 
 ## Current runtime architecture
 

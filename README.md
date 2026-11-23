@@ -1,18 +1,27 @@
 # OnCallDigest
 
-Configurable, deterministic on-call health digests for any team or product.
+Configurable on-call health digests with an optional AI-assisted triage workflow
+for any team or product.
 
-OnCallDigest collects health signals from configured sources, correlates them
-with existing work items, applies deterministic processing and suppression
-rules, and emits a versioned `digest.json`. Rendering, delivery, and AI
-triage are separate layers.
+OnCallDigest has two layers:
+
+1. A deterministic core that collects health signals, correlates them with
+   existing work items, applies configured processing and suppression rules,
+   and emits a versioned `digest.json`.
+2. An optional AI-assisted triage layer that investigates the digest,
+   consults team-maintained patterns, proposes verdicts and actions, and emits
+   a separate `triage-YYYY-MM-DD.json` artifact.
+
+The AI layer is intentionally non-deterministic and operates only on top of
+the deterministic digest. It does not replace or mutate the core output.
 
 ## What is working
 
 The vertical-slice MVP supports a KQL/ADX-style log-query source, read-only
 Azure DevOps work items, deterministic aggregation and fingerprinting, basic
-suppression, and local JSON/HTML output. The checked-in example uses recorded
-fixtures; live configurations use the same adapters over HTTPS.
+suppression, local JSON/HTML output, and a Copilot triage skill. The checked-in
+example uses recorded fixtures; live configurations use the same adapters over
+HTTPS.
 
 The current example demonstrates:
 
@@ -168,10 +177,34 @@ The following are planned extensions:
 The core intentionally does not create or modify work items and does not make
 LLM calls.
 
+## Deterministic core versus AI workflow
+
+The deterministic core is responsible for facts and reproducibility:
+
+- source collection and health status;
+- signal normalization;
+- thresholds, grouping, and fingerprints;
+- tracker lookup;
+- suppression rules;
+- canonical `digest.json`.
+
+The AI workflow is responsible for interpretation and proposed next steps:
+
+- investigation of evidence;
+- known-pattern lookup;
+- verdict rationale;
+- proposed actions;
+- triage report generation.
+
+AI verdicts must cite evidence and remain `proposed` until explicitly approved.
+Tracker writes, comments, suppression edits, commits, and pushes are not
+performed automatically.
+
 ## Design principles
 
 - Product, team, URL, query, and ownership details live in YAML configuration.
 - Typed Pydantic models define boundaries between pipeline stages.
 - Source failures degrade a run and are represented in the digest health banner.
-- Stable ordering, UTC timestamps, and explicit versions make output reproducible.
-- The core does not make LLM calls.
+- Stable ordering, UTC timestamps, and explicit versions make the core output
+  reproducible.
+- The core does not make LLM calls; AI triage is a separate workflow.
