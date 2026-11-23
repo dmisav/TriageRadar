@@ -5,6 +5,8 @@ import argparse
 import json
 from pathlib import Path
 
+from untrusted import wrap_json
+
 
 def main() -> int:
     parser = argparse.ArgumentParser()
@@ -16,7 +18,7 @@ def main() -> int:
     for row in rows:
         if args.component and row.get("component") != args.component:
             continue
-        print(json.dumps(row, sort_keys=True))
+        print(wrap_json(row))
     return 0
 
 

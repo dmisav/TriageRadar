@@ -4,6 +4,8 @@
 import argparse
 from pathlib import Path
 
+from untrusted import wrap_text
+
 
 def main() -> int:
     parser = argparse.ArgumentParser()
@@ -11,7 +13,7 @@ def main() -> int:
     parser.add_argument("--max-bytes", type=int, default=20000)
     args = parser.parse_args()
     content = args.artifact.read_bytes()[: args.max_bytes]
-    print(content.decode("utf-8", errors="replace"))
+    print(wrap_text(content.decode("utf-8", errors="replace")))
     return 0
 
 

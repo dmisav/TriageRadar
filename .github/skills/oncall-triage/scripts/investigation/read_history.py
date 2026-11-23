@@ -5,6 +5,8 @@ import argparse
 import json
 from pathlib import Path
 
+from untrusted import wrap_json
+
 
 def main() -> int:
     parser = argparse.ArgumentParser()
@@ -15,7 +17,7 @@ def main() -> int:
     needle = args.needle.casefold()
     for record in records:
         if needle in json.dumps(record, sort_keys=True).casefold():
-            print(json.dumps(record, sort_keys=True))
+            print(wrap_json(record))
     return 0
 
 

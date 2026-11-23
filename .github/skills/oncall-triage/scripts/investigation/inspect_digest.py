@@ -5,6 +5,8 @@ import argparse
 import json
 from pathlib import Path
 
+from untrusted import wrap_json
+
 
 def main() -> int:
     parser = argparse.ArgumentParser()
@@ -15,7 +17,7 @@ def main() -> int:
         for item in section.get("items", []):
             signal = item.get("signal", {})
             print(
-                json.dumps(
+                wrap_json(
                     {
                         "section": section.get("id"),
                         "fingerprint": item.get("fingerprint"),
@@ -25,8 +27,7 @@ def main() -> int:
                         "first_seen": signal.get("first_seen"),
                         "last_seen": signal.get("last_seen"),
                         "links": signal.get("links", []),
-                    },
-                    sort_keys=True,
+                    }
                 )
             )
     return 0

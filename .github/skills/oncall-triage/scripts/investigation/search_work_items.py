@@ -5,6 +5,8 @@ import argparse
 import json
 from pathlib import Path
 
+from untrusted import wrap_json
+
 
 def main() -> int:
     parser = argparse.ArgumentParser()
@@ -18,7 +20,7 @@ def main() -> int:
             str(item.get(field, "")) for field in ("key", "title", "description", "status")
         )
         if needle in haystack.casefold():
-            print(json.dumps(item, sort_keys=True))
+            print(wrap_json(item))
     return 0
 
 
