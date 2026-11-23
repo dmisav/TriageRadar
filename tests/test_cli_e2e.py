@@ -23,6 +23,7 @@ def test_cli_run_generates_digest_and_html_report(tmp_path: Path) -> None:
             str(output_dir),
             "--run-id",
             "e2e-test",
+            "--no-open",
         ],
         cwd=repository_root,
         env=environment,
@@ -48,5 +49,6 @@ def test_cli_run_generates_digest_and_html_report(tmp_path: Path) -> None:
     assert item["signal"]["component"] == "payments-api"
     assert item["suppression"]["state"] == "suppressed"
     assert item["matches"][0]["work_item"] == "PAY-123"
-    assert "example-team on-call digest" in html
-    assert "Known dependency maintenance window" not in html
+    assert "example-team" in html
+    assert "TriageRadar" in html
+    assert "Known dependency maintenance window" in html

@@ -1,0 +1,93 @@
+{
+  "generated_at": "2026-11-23T22:14:33.805752Z",
+  "metadata": {
+    "config_revision": "1",
+    "mode": "fixture",
+    "processor_version": "1",
+    "source_counts": {
+      "example-health": 2
+    }
+  },
+  "run_id": "local-run",
+  "schema_version": "1.0",
+  "sections": [
+    {
+      "id": "failures",
+      "items": [
+        {
+          "fingerprint": "dfcab89157f4de9dbeda275b8091682922f1b85ef0af1ea63aa020c59996bfbe",
+          "matches": [
+            {
+              "explanation": "Signal message matches work-item title.",
+              "method": "exact_identifier",
+              "score": 1.0,
+              "work_item": "PAY-123"
+            }
+          ],
+          "severity": "high",
+          "signal": {
+            "component": "payments-api",
+            "count": 10,
+            "environment": "prod",
+            "first_seen": "2026-11-20T08:00:00Z",
+            "kind": "error",
+            "last_seen": "2026-11-20T12:10:00Z",
+            "links": [
+              "https://example.invalid/logs/payments"
+            ],
+            "message": "Timeout calling dependency /srv/payments/client.py:42 request 9182",
+            "raw": {
+              "component": "payments-api",
+              "count": 7,
+              "environment": "prod",
+              "first_seen": "2026-11-20T08:00:00Z",
+              "kind": "error",
+              "last_seen": "2026-11-20T12:00:00Z",
+              "links": [
+                "https://example.invalid/logs/payments"
+              ],
+              "message": "Timeout calling dependency /srv/payments/client.py:42 request 9182"
+            },
+            "version": null
+          },
+          "suppression": {
+            "expires_on": "2099-12-31T00:00:00",
+            "reason": "Known dependency maintenance window",
+            "spike_guard_triggered": false,
+            "state": "suppressed",
+            "work_item": "PAY-123"
+          }
+        }
+      ],
+      "ordering": 10,
+      "summary": {
+        "affected_components": 1,
+        "severity_counts": {
+          "high": 1
+        },
+        "signal_count": 10
+      },
+      "title": "Failures"
+    }
+  ],
+  "status": {
+    "data_health_banner": "All configured sources healthy.",
+    "degraded": false,
+    "overall": "healthy",
+    "source_health": [
+      {
+        "duration_ms": 0,
+        "error": null,
+        "signal_count": 2,
+        "source_id": "example-health",
+        "status": "healthy"
+      }
+    ]
+  },
+  "team_id": "example-team",
+  "window": {
+    "end": "2026-11-23T22:14:33.805752Z",
+    "start": "2026-11-22T22:14:33.805752Z",
+    "time_zone": "UTC"
+  }
+}

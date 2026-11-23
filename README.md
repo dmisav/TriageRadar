@@ -41,27 +41,75 @@ uv sync --extra dev
 uv run triageradar validate examples/minimal.yaml
 uv run triageradar run \
   --config examples/minimal.yaml \
+  --output-dir ./out
+```
+
+The command writes `out/digest.json` (the canonical artifact) and
+`out/digest.html`, then opens the HTML report automatically. In VS Code,
+open Copilot Chat and run:
+
+```text
+/triage-radar
+```
+
+Copilot reads `out/digest.json` and produces the AI-assisted triage analysis.
+No external AI command or API configuration is required for this workflow.
+
+For a deterministic-only run, use the generated `digest.json` without running
+the Copilot skill. Install `uv sync --extra azure` for live ADX authentication
+through `DefaultAzureCredential`.
+
+### External AI adapter
+
+The optional `--with-ai` mode is for an externally configured agent command,
+not VS Code Copilot. Set `TRIAGERADAR_AI_COMMAND` before using it:
+
+```bash
+export TRIAGERADAR_AI_COMMAND="python path/to/your/triage_agent.py"
+export TRIAGERADAR_AI_TIMEOUT_SECONDS=900
+```
+
+Then run:
+
+```bash
+uv run triageradar run \
+  --config examples/full.yaml \
   --output-dir ./out \
   --with-ai
 ```
 
-The command writes `out/digest.json` (the canonical artifact) and
-`out/digest.html`, and when `--with-ai` is used it also writes
-`out/triage-YYYY-MM-DD.json` and `out/triage-YYYY-MM-DD.html`. Install
-`uv sync --extra azure` for live ADX authentication through
-`DefaultAzureCredential`.
+The external command must read the supplied `digest.json` and write the
+supplied triage JSON artifact. The CLI validates and renders that artifact
+before reporting success.
 
-The `--with-ai` option invokes the command configured by
-`TRIAGERADAR_AI_COMMAND`. The external command must read the supplied
-`digest.json` and write the supplied triage JSON artifact. The CLI validates and
-renders that artifact before reporting success.
-
-For deterministic-only output, omit `--with-ai`:
+For deterministic-only output, omit `--with-ai` and do not run the Copilot
+skill:
 
 ```bash
 uv run triageradar run \
   --config examples/minimal.yaml \
   --output-dir ./out
+```
+
+The report opens automatically for local runs. You can also state this
+explicitly with `--open`:
+
+```bash
+uv run triageradar run \
+  --config examples/minimal.yaml \
+  --output-dir ./out \
+  --open
+```
+
+With `--with-ai --open`, the generated triage HTML report is opened instead of
+the deterministic digest report. Use `--no-open` for scheduled or headless
+environments:
+
+```bash
+uv run triageradar run \
+  --config examples/minimal.yaml \
+  --output-dir ./out \
+  --no-open
 ```
 
 To open the generated HTML locally:
@@ -82,7 +130,7 @@ uv run triageradar render --from ./out/digest.json
 
 ```text
 triageradar validate CONFIG
-triageradar run --config CONFIG --output-dir DIRECTORY [--run-id ID] [--with-ai]
+triageradar run --config CONFIG --output-dir DIRECTORY [--run-id ID] [--with-ai] [--open|--no-open]
 triageradar render --from DIGEST_JSON
 ```
 

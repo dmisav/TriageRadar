@@ -6,6 +6,7 @@ import json
 import os
 import shlex
 import subprocess
+import webbrowser
 from pathlib import Path
 
 from triageradar.config import load_config, redact_secrets
@@ -36,6 +37,19 @@ def main() -> int:
         action="store_true",
         help="invoke the configured external triage agent after generating the digest",
     )
+    run_parser.add_argument(
+        "--open",
+        action="store_true",
+        dest="open_report",
+        help="open the generated HTML report in the default browser (default)",
+    )
+    run_parser.add_argument(
+        "--no-open",
+        action="store_false",
+        dest="open_report",
+        help="do not open the generated HTML report",
+    )
+    run_parser.set_defaults(open_report=True)
     subparsers.add_parser("init")
     args = parser.parse_args()
 
@@ -68,6 +82,16 @@ def main() -> int:
                 _run_ai_triage(
                     args.config, args.output_dir, digest.generated_at.date().isoformat()
                 )
+            if args.open_report:
+                report_name = (
+                    f"triage-{digest.generated_at.date().isoformat()}.html"
+                    if args.with_ai
+                    else "digest.html"
+                )
+                report_path = (args.output_dir / report_name).resolve()
+                if not webbrowser.open_new_tab(report_path.as_uri()):
+                    raise RuntimeError(f"unable to open report in browser: {report_path}")
+                print(f"opened {report_path}")
         except (OSError, ValueError, RuntimeError, subprocess.SubprocessError) as exc:
             print(f"run failed: {redact_secrets(str(exc))}")
             return 2
