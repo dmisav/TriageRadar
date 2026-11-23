@@ -37,6 +37,11 @@ flowchart LR
     Digest --> HTML["HTML renderer"]
     HTML --> Report["digest.html"]
 
+    JSON --> Skill["Copilot skill<br/>oncall-triage"]
+    Skill --> Investigate["Read-only investigation tools"]
+    Investigate --> Triage["triage-YYYY-MM-DD.json"]
+    Triage --> TriageHTML["triage HTML renderer"]
+
     Health["Source health + failures"] --> Digest
 ```
 
@@ -61,6 +66,9 @@ flowchart LR
 9. Suppression YAML rules are applied.
 10. The pipeline builds the typed `DigestDocument`.
 11. The file delivery adapter atomically writes `digest.json` and `digest.html`.
+12. The optional `oncall-triage` Copilot skill consumes `digest.json`, consults
+    team references, performs read-only investigations, and produces a
+    separately versioned triage artifact.
 
 ## Module responsibilities
 
@@ -77,6 +85,9 @@ flowchart LR
 | Rendering | `src/oncalldigest/rendering/` | HTML presentation of the canonical digest |
 | Delivery | `src/oncalldigest/delivery/` | Atomic local artifact publishing |
 | Plugins | `src/oncalldigest/plugins/` | Source, tracker, state, renderer, and delivery contracts |
+| Triage contract | `src/oncalldigest/models/triage.py` | Versioned agent-produced triage artifact |
+| Triage rendering | `src/oncalldigest/triage.py` | Validation and static HTML rendering |
+| Copilot skill | `.github/skills/oncall-triage/` | Daily procedure, references, guardrails, and read-only helpers |
 
 ## Data contracts
 
@@ -118,6 +129,28 @@ pipeline secrets, managed identity configuration, or container secrets.
 ADX live authentication prefers `DefaultAzureCredential`. Explicit tokens are
 fallbacks and are never serialized into the digest.
 
+## AI-assisted triage layer
+
+The AI layer is intentionally downstream from the deterministic core:
+
+```text
+digest.json
+    -> .github/skills/oncall-triage/SKILL.md
+    -> read-only investigation tools and team references
+    -> triage-YYYY-MM-DD.json
+    -> triage HTML report
+```
+
+The triage artifact is validated by
+[triage.v1.schema.json](../schemas/triage.v1.schema.json). Every row must cite
+evidence, and proposed actions remain `proposed` until the user explicitly
+approves them. The skill does not create tracker items, write comments, edit
+suppression files, commit, or push.
+
+The skill includes templates for known patterns, ownership and filing,
+suppression policy, and investigation tools. Approved verdicts can be appended
+to the learning section of known patterns after user approval.
+
 ## Failure and health behavior
 
 - Source calls have configured timeouts.
@@ -145,5 +178,5 @@ Planned additions are:
 1. Fingerprint-label and fuzzy-title matching, spike guards, and JSON/Azure
    Table state stores.
 2. CI pipeline and test-result sources, plus SMTP and Teams/Slack delivery.
-3. Dashboard sources, GitHub Issues and Jira trackers, and scheduled container
-   deployment.
+3. Dashboard sources, GitHub Issues and Jira trackers, scheduled container
+   deployment, and replay-based triage evaluation.

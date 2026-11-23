@@ -1,0 +1,408 @@
+{
+  "$defs": {
+    "ProposedAction": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "link_existing",
+            "comment",
+            "new_bug",
+            "suppress",
+            "rerun",
+            "recheck_tomorrow",
+            "none"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "status": {
+          "default": "proposed",
+          "enum": [
+            "proposed",
+            "approved",
+            "done",
+            "declined"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "target": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target"
+        },
+        "reference": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reference"
+        },
+        "approval_note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Approval Note"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "title": "ProposedAction",
+      "type": "object"
+    },
+    "Signal": {
+      "additionalProperties": false,
+      "description": "A normalized finding emitted by any source.",
+      "properties": {
+        "kind": {
+          "minLength": 1,
+          "title": "Kind",
+          "type": "string"
+        },
+        "component": {
+          "minLength": 1,
+          "title": "Component",
+          "type": "string"
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Version"
+        },
+        "environment": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Environment"
+        },
+        "message": {
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        },
+        "count": {
+          "default": 1,
+          "minimum": 1,
+          "title": "Count",
+          "type": "integer"
+        },
+        "first_seen": {
+          "format": "date-time",
+          "title": "First Seen",
+          "type": "string"
+        },
+        "last_seen": {
+          "format": "date-time",
+          "title": "Last Seen",
+          "type": "string"
+        },
+        "links": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Links",
+          "type": "array"
+        },
+        "raw": {
+          "additionalProperties": true,
+          "title": "Raw",
+          "type": "object"
+        }
+      },
+      "required": [
+        "kind",
+        "component",
+        "message",
+        "first_seen",
+        "last_seen"
+      ],
+      "title": "Signal",
+      "type": "object"
+    },
+    "TriageEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "minLength": 1,
+          "title": "Kind",
+          "type": "string"
+        },
+        "summary": {
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        },
+        "source": {
+          "minLength": 1,
+          "title": "Source",
+          "type": "string"
+        },
+        "link": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Link"
+        },
+        "observed_at": {
+          "format": "date-time",
+          "title": "Observed At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "summary",
+        "source",
+        "observed_at"
+      ],
+      "title": "TriageEvidence",
+      "type": "object"
+    },
+    "TriageMetadata": {
+      "additionalProperties": false,
+      "properties": {
+        "skill_revision": {
+          "title": "Skill Revision",
+          "type": "string"
+        },
+        "processor_version": {
+          "title": "Processor Version",
+          "type": "string"
+        },
+        "agent_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Agent Id"
+        },
+        "evaluation_context": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Evaluation Context"
+        }
+      },
+      "required": [
+        "skill_revision",
+        "processor_version"
+      ],
+      "title": "TriageMetadata",
+      "type": "object"
+    },
+    "TriageRow": {
+      "additionalProperties": false,
+      "properties": {
+        "item_id": {
+          "minLength": 1,
+          "title": "Item Id",
+          "type": "string"
+        },
+        "fingerprint": {
+          "minLength": 1,
+          "title": "Fingerprint",
+          "type": "string"
+        },
+        "signal": {
+          "$ref": "#/$defs/Signal"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/TriageEvidence"
+          },
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "verdict": {
+          "$ref": "#/$defs/TriageVerdict"
+        },
+        "proposed_action": {
+          "$ref": "#/$defs/ProposedAction"
+        },
+        "confidence": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "status": {
+          "default": "proposed",
+          "enum": [
+            "proposed",
+            "approved",
+            "done",
+            "declined"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "item_id",
+        "fingerprint",
+        "signal",
+        "evidence",
+        "verdict",
+        "proposed_action",
+        "confidence"
+      ],
+      "title": "TriageRow",
+      "type": "object"
+    },
+    "TriageSection": {
+      "additionalProperties": false,
+      "properties": {
+        "section_id": {
+          "title": "Section Id",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "ordering": {
+          "title": "Ordering",
+          "type": "integer"
+        },
+        "rows": {
+          "items": {
+            "$ref": "#/$defs/TriageRow"
+          },
+          "title": "Rows",
+          "type": "array"
+        }
+      },
+      "required": [
+        "section_id",
+        "title",
+        "ordering"
+      ],
+      "title": "TriageSection",
+      "type": "object"
+    },
+    "TriageVerdict": {
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "minLength": 1,
+          "title": "Value",
+          "type": "string"
+        },
+        "rationale": {
+          "minLength": 1,
+          "title": "Rationale",
+          "type": "string"
+        }
+      },
+      "required": [
+        "value",
+        "rationale"
+      ],
+      "title": "TriageVerdict",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Canonical agent-produced triage artifact.",
+  "properties": {
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "triage_date": {
+      "format": "date",
+      "title": "Triage Date",
+      "type": "string"
+    },
+    "run_id": {
+      "title": "Run Id",
+      "type": "string"
+    },
+    "team_id": {
+      "title": "Team Id",
+      "type": "string"
+    },
+    "digest_path": {
+      "title": "Digest Path",
+      "type": "string"
+    },
+    "generated_at": {
+      "format": "date-time",
+      "title": "Generated At",
+      "type": "string"
+    },
+    "sections": {
+      "items": {
+        "$ref": "#/$defs/TriageSection"
+      },
+      "title": "Sections",
+      "type": "array"
+    },
+    "metadata": {
+      "$ref": "#/$defs/TriageMetadata"
+    }
+  },
+  "required": [
+    "triage_date",
+    "run_id",
+    "team_id",
+    "digest_path",
+    "generated_at",
+    "metadata"
+  ],
+  "title": "TriageDocument",
+  "type": "object"
+}

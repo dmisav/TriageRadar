@@ -8,6 +8,8 @@ from pathlib import Path
 from oncalldigest.config import load_config, redact_secrets
 from oncalldigest.models.digest import DigestDocument
 from oncalldigest.pipeline import run
+from oncalldigest.triage import load as load_triage
+from oncalldigest.triage import write_html
 
 
 def main() -> int:
@@ -17,6 +19,11 @@ def main() -> int:
     validate.add_argument("config", type=Path)
     render = subparsers.add_parser("render")
     render.add_argument("--from", dest="digest_path", type=Path, required=True)
+    triage_validate = subparsers.add_parser("triage-validate")
+    triage_validate.add_argument("triage_path", type=Path)
+    triage_render = subparsers.add_parser("triage-render")
+    triage_render.add_argument("--from", dest="triage_path", type=Path, required=True)
+    triage_render.add_argument("--output", type=Path, required=True)
     run_parser = subparsers.add_parser("run")
     run_parser.add_argument("--config", type=Path, required=True)
     run_parser.add_argument("--output-dir", type=Path, required=True)
@@ -35,6 +42,15 @@ def main() -> int:
     if args.command == "render":
         digest = DigestDocument.model_validate_json(args.digest_path.read_text(encoding="utf-8"))
         print(json.dumps(digest.model_dump(mode="json"), indent=2))
+        return 0
+    if args.command == "triage-validate":
+        load_triage(args.triage_path)
+        print(f"valid: {args.triage_path}")
+        return 0
+    if args.command == "triage-render":
+        document = load_triage(args.triage_path)
+        write_html(document, args.output)
+        print(f"wrote {args.output}")
         return 0
     if args.command == "run":
         config = load_config(args.config)

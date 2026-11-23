@@ -1,5 +1,47 @@
 {
   "$defs": {
+    "AiTriageConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "default": false,
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "playbook_file": {
+          "default": ".github/skills/oncall-triage/SKILL.md",
+          "title": "Playbook File",
+          "type": "string"
+        },
+        "known_patterns_file": {
+          "default": ".github/skills/oncall-triage/references/known-patterns.md",
+          "title": "Known Patterns File",
+          "type": "string"
+        },
+        "ownership_file": {
+          "default": ".github/skills/oncall-triage/references/ownership-and-filing.md",
+          "title": "Ownership File",
+          "type": "string"
+        },
+        "investigation_toolkit_file": {
+          "default": ".github/skills/oncall-triage/references/investigation-toolkit.md",
+          "title": "Investigation Toolkit File",
+          "type": "string"
+        },
+        "section_verdict_rules": {
+          "additionalProperties": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "title": "Section Verdict Rules",
+          "type": "object"
+        }
+      },
+      "title": "AiTriageConfig",
+      "type": "object"
+    },
     "SectionConfig": {
       "additionalProperties": false,
       "properties": {
@@ -140,6 +182,9 @@
       ],
       "default": null,
       "title": "Suppression File"
+    },
+    "ai_triage": {
+      "$ref": "#/$defs/AiTriageConfig"
     }
   },
   "required": [

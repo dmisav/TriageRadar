@@ -93,6 +93,30 @@ at runtime by the typed models in
 The HTML report is derived from the JSON artifact, so downstream integrations
 can consume the structured output without scraping HTML.
 
+## AI-assisted triage
+
+The deterministic digest is the input to the optional Copilot skill at
+[.github/skills/oncall-triage](.github/skills/oncall-triage). The skill:
+
+1. Reviews digest sections top-down.
+2. Looks up known patterns and prior verdicts.
+3. Uses read-only investigation helpers.
+4. Produces a separate `triage-YYYY-MM-DD.json` artifact.
+5. Renders the artifact to HTML after validation.
+
+Validate or render a triage artifact with:
+
+```bash
+uv run oncalldigest triage-validate triage-2026-11-20.json
+uv run oncalldigest triage-render \
+  --from triage-2026-11-20.json \
+  --output triage-2026-11-20.html
+```
+
+Every verdict must cite evidence. Actions are initially `proposed` and require
+explicit approval before execution. The skill never writes to trackers,
+comments, suppression files, Git, or remote repositories automatically.
+
 ## Development
 
 Install the development environment and run all checks:

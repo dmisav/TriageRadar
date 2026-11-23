@@ -29,6 +29,19 @@ class SectionConfig(BaseModel):
     grouping_key: str = "component"
 
 
+class AiTriageConfig(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    enabled: bool = False
+    playbook_file: str = ".github/skills/oncall-triage/SKILL.md"
+    known_patterns_file: str = ".github/skills/oncall-triage/references/known-patterns.md"
+    ownership_file: str = ".github/skills/oncall-triage/references/ownership-and-filing.md"
+    investigation_toolkit_file: str = (
+        ".github/skills/oncall-triage/references/investigation-toolkit.md"
+    )
+    section_verdict_rules: dict[str, list[str]] = Field(default_factory=dict)
+
+
 class SourceConfig(BaseModel):
     model_config = ConfigDict(extra="allow")
 
@@ -49,6 +62,7 @@ class TeamConfig(BaseModel):
     sections: list[SectionConfig] = Field(default_factory=list)
     tracker: dict[str, Any] | None = None
     suppression_file: str | None = None
+    ai_triage: AiTriageConfig = Field(default_factory=AiTriageConfig)
 
 
 def _substitute(value: Any) -> Any:

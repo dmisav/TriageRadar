@@ -20,3 +20,7 @@ tracker:
   settings:
     mode: "${AZDO_MODE:-fixture}"
     fixture: "${AZDO_FIXTURE:-fixtures/azure_devops_work_items.json}"
+ai_triage:
+  enabled: true
+  section_verdict_rules:
+    failures: [known_pattern, actionable, insufficient_evidence, recheck]

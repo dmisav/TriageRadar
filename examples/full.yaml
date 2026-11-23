@@ -38,3 +38,8 @@ tracker:
     project: "${AZDO_PROJECT}"
     wiql: "${AZDO_WIQL}"
     token_env: "${AZDO_TOKEN_ENV:-AZDO_TOKEN}"
+ai_triage:
+  enabled: true
+  section_verdict_rules:
+    ci: [known_pattern, flaky, regression, actionable, insufficient_evidence]
+    errors: [known_pattern, regression, actionable, insufficient_evidence]
